@@ -1,115 +1,50 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# Build a golang action
 
-# Create an Action using Golang
+This action allows you to build an action written in go.
 
-Use this template to bootstrap the creation of a Golang action.:rocket:
+## Use this action
 
-This template includes compiliation support, tests, a validation workflow, publishing, and versioning guidance.  
+Yet to be tested and adjusted
 
-## Create an action from this template
-
-Click the `Use this Template` and provide the new repo details for your action
-
-## Code in Master
-
-Install the dependencies  
-```bash
-$ go mod download
-```
-
-Build the code
-```bash
-$ go build
-```
-
-Run the tests :heavy_check_mark:  
-```bash
-$ go test -v ./...
-
-  === RUN   TestRunMain
-  --- PASS: TestRunMain (0.01s)
-  PASS
-  ok      github.com/tjamet/go-action-template    0.315s
-
-...
-```
-
-Commit the pre-built binaries to `./dist/main_linux`, `./dist/main_darwin` and `./dist/main_windows.exe` for respectively linux, mac OS and windows actions.
-
-## Change action.yml
-
-The action.yml contains defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-<!---
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
--->
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos.  We will create a releases branch and only checkin production modules (core in this case). 
-
-```bash
-$ git checkout -b releases/v1
-$ git commit -a -m "prod dependencies"
-```
-
-```bash
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-<!--
-## Validate
-
-You can now validate the action by referencing the releases/v1 branch
+Create the workflow to build your release. For example in `.github/workflows/build-action.yml
 
 ```yaml
-uses: actions/typescript-action@releases/v1
-with:
-  milliseconds: 1000
-```
+name: Build action
 
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
+on:
+  pull_request:
+  push:
+    branches:
+      - releases/*
 
--->
+jobs:
+  build:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v1
+      - run: go build -v -o dist/main
+      - uses: actions/upload-artifact@v1
+        with:
+          name: main-${{ maatrix.runs-on }}
+          path: dist/main
+  publish:
+    name: Publish new action version
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/download-artifact@v1
+        with:
+          name: main-ubuntu-latest
+      - uses: actions/download-artifact@v1
+        with:
+          name: main-macos-latest
+      - uses: actions/download-artifact@v1
+        with:
+          name: main-windows-latest
+      - uses: actions-go/release-action@master
 
-## Usage:
-
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and tested action
-
-```yaml
-uses: tjamet/go-action-template@master
-with:
-  milliseconds: 1000
 ```

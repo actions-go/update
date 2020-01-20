@@ -1,10 +1,14 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Release action'
+description: >
+  Publish a previously built github action, written in go.
 inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+  token:
+    description: >
+      Auth token used to fetch the repository. The token is stored in the local
+      git config, which enables your scripts to run authenticated git commands.
+      The post-job step removes the token from the git config. [Learn more about
+      creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
+    default: ${{ github.token }}
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: node12
+  main: dist/index.js
