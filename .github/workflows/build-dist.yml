@@ -5,6 +5,10 @@ on: # rebuild any branch changes
       - '*'
       - '**/*'
       - '!dist/**'
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
 
 jobs:
   build:

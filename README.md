@@ -6,7 +6,7 @@ This action allows you to build an action written in go.
 
 Yet to be tested and adjusted
 
-Create the workflow to build your release. For example in `.github/workflows/build-action.yml
+Create the workflow to build your release. For example in `.github/workflows/build-dist.yml
 
 ```yaml
 name: "build-dist"
@@ -16,6 +16,10 @@ on: # rebuild any branch changes
       - '*'
       - '**/*'
       - '!dist/**'
+    branches:
+      - '*'
+    tags-ignore:
+      - '*'
 
 jobs:
   build:
@@ -44,9 +48,6 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: main-macos-latest
-      - uses: actions/download-artifact@v1
-        with:
-          name: main-windows-latest
       - uses: actions/download-artifact@v1
         with:
           name: main-windows-latest
