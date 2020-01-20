@@ -1,9 +1,10 @@
-name: Build action
-
-on:
+name: "build-dist"
+on: # rebuild any branch changes
   push:
-    branches:
-      - releases/*
+    paths:
+      - '*'
+      - '**/*'
+      - '!dist/**'
 
 jobs:
   build:

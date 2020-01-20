@@ -9,13 +9,13 @@ Yet to be tested and adjusted
 Create the workflow to build your release. For example in `.github/workflows/build-action.yml
 
 ```yaml
-name: Build action
-
-on:
-  pull_request:
+name: "build-dist"
+on: # rebuild any branch changes
   push:
-    branches:
-      - releases/*
+    paths:
+      - '*'
+      - '**/*'
+      - '!dist/**'
 
 jobs:
   build:
@@ -26,10 +26,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v1
+        with:
+          go-version: '1.12'
       - run: go build -v -o dist/main
       - uses: actions/upload-artifact@v1
         with:
-          name: main-${{ maatrix.runs-on }}
+          name: main-${{ matrix.runs-on }}
           path: dist/main
   publish:
     name: Publish new action version
@@ -45,6 +47,9 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: main-windows-latest
-      - uses: actions-go/release-action@master
+      - uses: actions/download-artifact@v1
+        with:
+          name: main-windows-latest
+      - uses: actions-go/update@v1
 
 ```
