@@ -35,8 +35,8 @@ jobs:
       - uses: actions/download-artifact@v1
         with:
           name: main-windows-latest
-      - run: find .
-      - uses: actions/upload-artifact@v1
-        with:
-          name: main-ubuntu
-          path: main-ubuntu-latest
+      - run: |
+          find .
+          cp main-ubuntu-latest/main /tmp/main
+          chmod +x /tmp/main
+      - run: env INPUT_TOKEN=${{ secrets.GITHUB_TOKEN }} /tmp/main
