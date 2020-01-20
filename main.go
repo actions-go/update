@@ -124,6 +124,30 @@ func gitAdd() error {
 	return git("add", r...)()
 }
 
+func push(branch string) func() error {
+	return func() error {
+		b := bytes.NewBuffer(nil)
+		cmd := exec.Command("git", "status", "-s", "-uno")
+		cmd.Stdout = b
+		cmd.Stderr = os.Stderr
+		err := cmd.Run()
+		if err != nil {
+			return err
+		}
+		if strings.TrimSpace(b.String()) == "" {
+			core.Info("No file updated. Skipping push")
+			return nil
+		}
+		return firstError(
+			gitAdd,
+			git("config", "user.email", "actions-go@users.noreply.github.com"),
+			git("config", "user.name", "actions-go-bot"),
+			git("commit", "-m", "[auto] Add golang action entrypoints"),
+			git("push", "origin", branch),
+		)
+	}
+}
+
 func runMain() error {
 	if github.Context.Payload.Repository == nil || github.Context.Payload.Repository.CloneURL == nil {
 		return fmt.Errorf("missing repository URL in event")
@@ -135,11 +159,7 @@ func runMain() error {
 		setupCredentials("."),
 		git("fetch", "origin"),
 		git("checkout", branch),
-		gitAdd,
-		git("config", "user.email", "actions-go@users.noreply.github.com"),
-		git("config", "user.name", "actions-go-bot"),
-		git("commit", "-m", "[auto] Add golang action entrypoints"),
-		git("push", "origin", branch),
+		push(branch),
 	)
 }
 
