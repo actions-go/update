@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v1
         with:
-          go-version: '1.12'
+          go-version: '1.17'
       - run: go build -v -o dist/main
       - uses: actions/upload-artifact@v1
         with:
