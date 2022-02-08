@@ -3,7 +3,7 @@ module github.com/tjamet/go-action-template
 go 1.17
 
 require (
-	github.com/actions-go/toolkit v0.0.0-20220207235722-6bfcbd32f54f
+	github.com/actions-go/toolkit v0.0.0-20220208211359-16b98579ec95
 	github.com/google/uuid v1.3.0
 	github.com/stretchr/testify v1.7.0
 )
